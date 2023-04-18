@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+  <title>Генератор Паролей</title>
+<head>
+  <meta charset="UTF-8" />
+  <title>Генератор паролей</title>
+  <style>
+    /* Стили для страницы */
+
+    body {
+      background-color: #f8f8f8;
+      font-family: "Helvetica Neue", sans-serif;
+      font-size: 16px;
+      line-height: 24px;
+      color: #444444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0 20px;
+    }
+    /* Контейнер с формой */
+
+    .password-generator-container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      padding: 40px;
+      box-sizing: border-box;
+      position: relative;
+    }
+    /* Заголовок формы */
+
+    .password-generator-title {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 40px;
+    }
+    /* Поле ввода пароля */
+
+    .password-generator-input {
+      border: 2px solid #e4e4e4;
+      border-radius: 5px;
+      display: block;
+      font-size: 16px;
+      font-family: "Helvetica Neue", sans-serif;
+      line-height: 24px;
+      padding: 10px 16px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+    /* Контейнер строки настроек */
+
+    .settings-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    /* Кнопка обновления пароля */
+
+    .refresh-button {
+      background-color: #616161;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      display: inline-block;
+      font-family: "Helvetica Neue", sans-serif;
+      font-size: 16px;
+      line-height: 24px;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      transition: background-color 0.3s;
+      border-radius: 5px;
+    }
+    /* Кнопка обновления пароля при наведении */
+
+    .refresh-button:hover {
+      background-color: #444444;
+    }
+    /* Контейнер сложности пароля */
+
+    .password-strength-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    /* Полоски сложности пароля */
+
+    .password-strength-bar {
+      height: 10px;
+      border-radius: 100px;
+      width: 0;
+      transition: width 0.3s ease-in-out;
+    }
+    /* Различные классы полоски сложности пароля */
+
+    .none {
+      background-color: #eaeaea;
+    }
+
+    .weak {
+      background-color: #ff4136;
+    }
+
+    .medium {
+      background-color: #ffb700;
+    }
+
+    .strong {
+      background-color: #2ecc40;
+    }
+    /* Подсказка со сложностью пароля */
+
+    .password-strength-label {
+      font-size: 12px;
+      margin-left: 10px;
+    }
+    /* Мобильный дизайн */
+
+    @media (max-width: 480px) {
+      .password-generator-container {
+        padding: 20px;
+      }
+      .password-generator-title {
+        font-size: 20px;
+      }
+      .password-generator-input {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+      .password-strength-bar {
+        height: 8px;
+      }
+      .password-strength-label {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="password-generator-container">
+    <h1 class="password-generator-title">Генератор паролей</h1>
+    <input type="text" class="password-generator-input" id="password" readonly />
+    <div class="settings-container">
+      <button class="refresh-button" id="generate">Сгенерировать</button>
+      <select id="length">
+        <option value="8">8 символов</option>
+        <option value="12">12 символов</option>
+        <option value="16" selected>16 символов</option>
+        <option value="24">24 символа</option>
+      </select>
+    </div>
+    <div class="password-strength-container">
+      <div class="password-strength-bar weak" id="password-strength-weak"></div>
+      <div class="password-strength-bar medium" id="password-strength-medium"></div>
+      <div class="password-strength-bar strong" id="password-strength-strong"></div>
+      <span class="password-strength-label" id="password-strength-label"></span>
+    </div>
+  </div>
+  <script>
+    /* Функция для генерации пароля */
+    function generatePassword(length) {
+      var chars =
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz!@#$%^&*()_+~`|}{[]:;?><,./-=";
+      var password = "";
+      for (var i = 0; i < length; i++) {
+        var randomIndex = Math.floor(Math.random() * chars.length);
+        password += chars.substring(randomIndex, randomIndex + 1);
+      }
+      return password;
+    }
+    /* Функция для проверки сложности пароля */
+    function checkPasswordStrength(password) {
+      var strength = {
+        weak: 1,
+        medium: 1,
+        strong: 1,
+      };
+      if (password.length <= 8) {
+        strength.weak++;
+      } else if (password.length <= 12) {
+        strength.medium++;
+      } else if (password.length <= 16) {
+        strength.strong++;
+      } else {
+        strength.strong += 2;
+      }
+      return strength;
+    }
+    /* Обновление сложности пароля */
+    function updatePasswordStrength(passwordStrength) {
+      var passwordStrengthBarWeak = document.getElementById(
+        "password-strength-weak"
+      );
+      var passwordStrengthBarMedium = document.getElementById(
+        "password-strength-medium"
+      );
+      var passwordStrengthBarStrong = document.getElementById(
+        "password-strength-strong"
+      );
+      var passwordStrengthLabel = document.getElementById(
+        "password-strength-label"
+      );
+      passwordStrengthBarWeak.style.width = passwordStrength.weak + "0%";
+      passwordStrengthBarMedium.style.width = passwordStrength.medium + "0%";
+      passwordStrengthBarStrong.style.width = passwordStrength.strong + "0%";
+      if (passwordStrength.weak > passwordStrength.medium) {
+        passwordStrengthLabel.innerHTML = "Не очень сложный";
+        passwordStrengthBarWeak.className = "password-strength-bar weak";
+        passwordStrengthBarMedium.className = "password-strength-bar none";
+      } else if (passwordStrength.medium > passwordStrength.strong) {
+        passwordStrengthLabel.innerHTML = "Средняя сложность";
+        passwordStrengthBarMedium.className = "password-strength-bar medium";
+        passwordStrengthBarWeak.className = "password-strength-bar none";
+        passwordStrengthBarStrong.className = "password-strength-bar none";
+      } else {
+        passwordStrengthLabel.innerHTML = "Очень сложный";
+        passwordStrengthBarStrong.className = "password-strength-bar strong";
+        passwordStrengthBarMedium.className = "password-strength-bar medium";
+      }
+    }
+    /* Обновление пароля */
+    function updatePassword() {
+      var passwordInput = document.getElementById("password");
+      var passwordLength = document.getElementById("length").value;
+      var password = generatePassword(passwordLength);
+      passwordInput.value = password;
+      var passwordStrength = checkPasswordStrength(password);
+      updatePasswordStrength(passwordStrength);
+    }
+    /* Событие клика на
+    кнопку */
+    document.getElementById("generate").onclick = function() {
+      updatePassword();
+    };
+    /* Генерация пароля при загрузке страницы */
+    updatePassword();
+  </script>
+</body>
+
+</html>
